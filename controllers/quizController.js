@@ -217,7 +217,7 @@ export const generateQuiz = async (req, res) => {
         imageUrl = await uploadImageToCloudinary(req.file.path);
       } catch (error) {
         console.error('Image upload error:', error);
-        return res.status(500).json({ error});
+        return res.status(500).json({ error: 'Failed to process image' });
       }
     }
     
