@@ -4,6 +4,7 @@ const questionSchema = new mongoose.Schema({
   questionText: String,
   options: [String],
   correctOption: Number, // 1-based index
+  explanation: String, // Added explanation field
 });
 
 const quizSchema = new mongoose.Schema({
