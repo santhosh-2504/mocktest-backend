@@ -38,7 +38,6 @@ export const loginUser = async (req, res) => {
   }
 };
 
-
 export const logoutUser = async (req, res) => {
   res.json({ message: 'Logout handled on client by removing token' });
 };
@@ -46,4 +45,132 @@ export const logoutUser = async (req, res) => {
 export const getProfile = async (req, res) => {
   const user = await User.findById(req.user.id).select('-password');
   res.status(200).json(user);
+};
+
+// export const updateQuizScore = async (req, res) => {
+//   const { quizId, score } = req.body;
+  
+//   try {
+//     // Validate required fields
+//     if (!quizId || score === undefined || score === null) {
+//       return res.status(400).json({ 
+//         error: 'Quiz ID and score are required' 
+//       });
+//     }
+
+//     // Validate score is a number
+//     if (typeof score !== 'number' || score < 0) {
+//       return res.status(400).json({ 
+//         error: 'Score must be a non-negative number' 
+//       });
+//     }
+
+//     const user = await User.findById(req.user.id);
+//     if (!user) {
+//       return res.status(404).json({ error: 'User not found' });
+//     }
+
+//     // Add the new quiz attempt to the user's quizAttempts array
+//     user.quizAttempts.push({
+//       quiz: quizId,
+//       score: score,
+//       updatedAt: new Date()
+//     });
+
+//     await user.save();
+
+//     res.status(200).json({ 
+//       message: 'Quiz score updated successfully',
+//       quizAttempt: {
+//         quiz: quizId,
+//         score: score,
+//         updatedAt: new Date()
+//       }
+//     });
+//   } catch (err) {
+//     console.error(err);
+//     res.status(500).json({ error: 'Failed to update quiz score' });
+//   }
+// };
+
+export const updateQuizScore = async (req, res) => {
+  const { quizId, score } = req.body;
+  
+  try {
+    // Validate required fields
+    if (!quizId || score === undefined || score === null) {
+      return res.status(400).json({ 
+        error: 'Quiz ID and score are required' 
+      });
+    }
+
+    // Validate score is a number
+    if (typeof score !== 'number' || score < 0) {
+      return res.status(400).json({ 
+        error: 'Score must be a non-negative number' 
+      });
+    }
+
+    // First, try to update existing quiz attempt
+    const updateResult = await User.findOneAndUpdate(
+      { 
+        _id: req.user.id,
+        'quizAttempts.quiz': quizId
+      },
+      { 
+        $set: {
+          'quizAttempts.$.score': score,
+          'quizAttempts.$.updatedAt': new Date()
+        }
+      },
+      { new: true }
+    );
+
+    if (updateResult) {
+      // Successfully updated existing attempt
+      const updatedAttempt = updateResult.quizAttempts.find(
+        attempt => attempt.quiz.toString() === quizId
+      );
+
+      return res.status(200).json({ 
+        message: 'Quiz score updated successfully',
+        quizAttempt: {
+          quiz: quizId,
+          score: score,
+          updatedAt: updatedAttempt.updatedAt
+        }
+      });
+    } else {
+      // No existing attempt found, create new one
+      const addResult = await User.findByIdAndUpdate(
+        req.user.id,
+        {
+          $push: {
+            quizAttempts: {
+              quiz: quizId,
+              score: score,
+              updatedAt: new Date()
+            }
+          }
+        },
+        { new: true }
+      );
+
+      if (!addResult) {
+        return res.status(404).json({ error: 'User not found' });
+      }
+
+      res.status(200).json({ 
+        message: 'Quiz score recorded successfully',
+        quizAttempt: {
+          quiz: quizId,
+          score: score,
+          updatedAt: new Date()
+        }
+      });
+    }
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to update quiz score' });
+  }
 };
