@@ -138,7 +138,7 @@
 // };
 
 import Quiz from '../models/Quiz.js';
-import { generateQuizWithAI, generateTopicWithAI, uploadImageToCloudinary } from '../utils/openRouterService.js';
+import { generateQuizWithAI, generateTopicWithAI, askAI, uploadImageToCloudinary } from '../utils/openRouterService.js';
 import { formatQuizForStorage } from '../utils/quizUtils.js';
 import multer from 'multer';
 import path from 'path';
@@ -295,5 +295,24 @@ export const getQuizTitles = async (req, res) => {
   } catch (err) {
     console.error('Error fetching quiz titles:', err);
     res.status(500).json({ error: 'Failed to fetch quiz titles' });
+  }
+};
+
+export const askAIAboutQuestion = async (req, res) => {
+  try {
+    const { questionText, options, explanation } = req.body;
+
+    // Basic validation
+    if (!questionText || !options || !explanation) {
+      return res.status(400).json({ error: 'Question text, options, and explanation are required' });
+    }
+
+    // Call OpenRouter service to get AI response
+    const aiResponse = await askAI(questionText, options, explanation);
+
+    res.status(200).json({ aiResponse });
+  } catch (err) {
+    console.error('AI question query error:', err);
+    res.status(500).json({ error: err.message || 'Failed to process AI query' });
   }
 };

@@ -26,6 +26,7 @@ import {
   getUserQuizzes, 
   deleteQuiz,
   getQuizTitles,
+  askAIAboutQuestion,
   upload
 } from '../controllers/quizController.js';
 import authMiddleware from '../middleware/auth.js';
@@ -42,6 +43,7 @@ router.post('/create', authMiddleware, createQuiz);
 router.get('/', getAllQuizzes);
 router.get('/user', authMiddleware, getUserQuizzes);
 router.delete('/:id', authMiddleware, deleteQuiz);
-router.get('/titles', getQuizTitles); // New endpoint for quiz titles
+router.get('/titles', getQuizTitles);
+router.post('/ask-ai', authMiddleware, askAIAboutQuestion);
 
 export default router;
