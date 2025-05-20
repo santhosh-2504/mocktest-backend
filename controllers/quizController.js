@@ -195,6 +195,24 @@ export const createQuiz = async (req, res) => {
   }
 };
 
+export const createSelfQuiz = async (req, res) => {
+  const { userId, topic, level, questions } = req.body;
+  try {
+    const quiz = await Quiz.create({
+      userId,
+      topic,
+      level,
+      questions,
+      selfMade: true
+    });
+    res.status(201).json({ quiz });
+  } catch (err) {
+    console.error('Quiz creation error:', err);
+    res.status(500).json({ error: 'Quiz creation failed' });
+  }
+}
+
+
 export const generateQuiz = async (req, res) => {
   try {
     let { topic, level } = req.body;

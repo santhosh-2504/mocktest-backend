@@ -47,6 +47,7 @@ app.use(express.json());
 app.get('/', (req, res) => {
   res.send('API is running...');
 });
+app.use(express.static('public'));
 
 app.use('/api/quizzes', quizRoutes);
 app.use('/api/users', userRoutes);

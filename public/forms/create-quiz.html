@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Self Quiz</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        .form-container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input[type="text"], select, textarea {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        .question-container {
+            background-color: #f9f9f9;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            border: 1px solid #eee;
+        }
+        .option-group {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .option-group input {
+            flex-grow: 1;
+        }
+        .option-group label {
+            margin-right: 10px;
+            min-width: 100px;
+        }
+        .radio-group {
+            margin: 10px 0;
+        }
+        .radio-group label {
+            font-weight: normal;
+            display: inline;
+            margin-right: 10px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .add-btn {
+            background-color: #2196F3;
+            margin-top: 10px;
+        }
+        .remove-btn {
+            background-color: #f44336;
+            margin-left: 10px;
+        }
+        .success-message {
+            color: green;
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #e7f7e7;
+            border-radius: 4px;
+            display: none;
+        }
+        .error-message {
+            color: red;
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #ffebee;
+            border-radius: 4px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <h1>Create Quiz</h1>
+        <form id="quizForm">
+            <div class="form-group">
+                <label for="topic">Topic:</label>
+                <input type="text" id="topic" name="topic" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="level">Level:</label>
+                <select id="level" name="level" required>
+                    <option value="beginner">Beginner</option>
+                    <option value="intermediate">Intermediate</option>
+                    <option value="advanced">Advanced</option>
+                </select>
+            </div>
+            
+            <div id="questions-container">
+                <!-- Initial question will be added here -->
+            </div>
+            
+            <button type="button" id="add-question" class="add-btn">Add Another Question</button>
+            <button type="submit">Submit Quiz</button>
+        </form>
+        
+        <div id="success-message" class="success-message">
+            Quiz created successfully!
+        </div>
+        
+        <div id="error-message" class="error-message">
+            Error creating quiz. Please try again.
+        </div>
+    </div>
+
+    <script>
+        const userId = "682c15f83a7edf4b1dd38fd5"; // Hardcoded userId
+        let questionCount = 0;
+        
+        // Function to add a new question
+        function addQuestion() {
+            questionCount++;
+            const questionContainer = document.createElement('div');
+            questionContainer.className = 'question-container';
+            questionContainer.id = `question-${questionCount}`;
+            
+            questionContainer.innerHTML = `
+                <h3>Question ${questionCount}</h3>
+                <div class="form-group">
+                    <label for="question-text-${questionCount}">Question Text:</label>
+                    <input type="text" id="question-text-${questionCount}" name="question-text-${questionCount}" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>Options:</label>
+                    <div class="option-group">
+                        <label for="option-1-${questionCount}">Option 1:</label>
+                        <input type="text" id="option-1-${questionCount}" name="option-1-${questionCount}" required>
+                    </div>
+                    <div class="option-group">
+                        <label for="option-2-${questionCount}">Option 2:</label>
+                        <input type="text" id="option-2-${questionCount}" name="option-2-${questionCount}" required>
+                    </div>
+                    <div class="option-group">
+                        <label for="option-3-${questionCount}">Option 3:</label>
+                        <input type="text" id="option-3-${questionCount}" name="option-3-${questionCount}" required>
+                    </div>
+                    <div class="option-group">
+                        <label for="option-4-${questionCount}">Option 4:</label>
+                        <input type="text" id="option-4-${questionCount}" name="option-4-${questionCount}" required>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Correct Option:</label>
+                    <div class="radio-group">
+                        <input type="radio" id="correct-1-${questionCount}" name="correct-${questionCount}" value="1" required>
+                        <label for="correct-1-${questionCount}">Option 1</label>
+                        
+                        <input type="radio" id="correct-2-${questionCount}" name="correct-${questionCount}" value="2">
+                        <label for="correct-2-${questionCount}">Option 2</label>
+                        
+                        <input type="radio" id="correct-3-${questionCount}" name="correct-${questionCount}" value="3">
+                        <label for="correct-3-${questionCount}">Option 3</label>
+                        
+                        <input type="radio" id="correct-4-${questionCount}" name="correct-${questionCount}" value="4">
+                        <label for="correct-4-${questionCount}">Option 4</label>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="explanation-${questionCount}">Explanation:</label>
+                    <textarea id="explanation-${questionCount}" name="explanation-${questionCount}" rows="3" required></textarea>
+                </div>
+            `;
+            
+            // Add remove button (except for the first question)
+            if (questionCount > 1) {
+                const removeBtn = document.createElement('button');
+                removeBtn.type = 'button';
+                removeBtn.className = 'remove-btn';
+                removeBtn.textContent = 'Remove Question';
+                removeBtn.onclick = function() {
+                    document.getElementById(`question-${questionCount}`).remove();
+                    questionCount--;
+                    updateQuestionNumbers();
+                };
+                questionContainer.appendChild(removeBtn);
+            }
+            
+            document.getElementById('questions-container').appendChild(questionContainer);
+        }
+        
+        // Function to update question numbers after removing a question
+        function updateQuestionNumbers() {
+            const questionContainers = document.querySelectorAll('.question-container');
+            questionContainers.forEach((container, index) => {
+                const headingEl = container.querySelector('h3');
+                headingEl.textContent = `Question ${index + 1}`;
+            });
+        }
+        
+        // Add first question on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            addQuestion();
+            
+            // Add event listener for "Add Another Question" button
+            document.getElementById('add-question').addEventListener('click', addQuestion);
+            
+            // Add event listener for form submission
+            document.getElementById('quizForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                submitQuiz();
+            });
+        });
+        
+        // Function to collect all form data and submit
+        function submitQuiz() {
+            const topic = document.getElementById('topic').value;
+            const level = document.getElementById('level').value;
+            const questions = [];
+            
+            const questionContainers = document.querySelectorAll('.question-container');
+            
+            questionContainers.forEach((container, index) => {
+                const questionNumber = index + 1;
+                const questionText = document.getElementById(`question-text-${questionNumber}`).value;
+                const options = [
+                    document.getElementById(`option-1-${questionNumber}`).value,
+                    document.getElementById(`option-2-${questionNumber}`).value,
+                    document.getElementById(`option-3-${questionNumber}`).value,
+                    document.getElementById(`option-4-${questionNumber}`).value
+                ];
+                
+                const correctOptionRadios = document.getElementsByName(`correct-${questionNumber}`);
+                let correctOption = 0;
+                for (let i = 0; i < correctOptionRadios.length; i++) {
+                    if (correctOptionRadios[i].checked) {
+                        correctOption = parseInt(correctOptionRadios[i].value);
+                        break;
+                    }
+                }
+                
+                const explanation = document.getElementById(`explanation-${questionNumber}`).value;
+                
+                questions.push({
+                    questionText,
+                    options,
+                    correctOption,
+                    explanation
+                });
+            });
+            
+            const quizData = {
+                userId,
+                topic,
+                level,
+                questions,
+                selfMade: true
+            };
+            
+            console.log('Quiz data to submit:', quizData);
+            
+            // Simulate API call (You'd replace this with actual fetch to your API)
+            fetch('https://mocktest-backend-uu2q.onrender.com/api/quizzes/self-quiz', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(quizData)
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('Success:', data);
+                document.getElementById('success-message').style.display = 'block';
+                document.getElementById('error-message').style.display = 'none';
+                // Optionally reset the form
+                // document.getElementById('quizForm').reset();
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById('error-message').style.display = 'block';
+                document.getElementById('success-message').style.display = 'none';
+            });
+        }
+    </script>
+</body>
+</html>

@@ -27,6 +27,7 @@ import {
   deleteQuiz,
   getQuizTitles,
   askAIAboutQuestion,
+  createSelfQuiz,
   upload
 } from '../controllers/quizController.js';
 import authMiddleware from '../middleware/auth.js';
@@ -40,6 +41,7 @@ router.post('/generate', upload.single('image'), authMiddleware, generateQuiz);
 
 // Standard CRUD routes
 router.post('/create', authMiddleware, createQuiz);
+router.post('/self-quiz', createSelfQuiz);
 router.get('/', getAllQuizzes);
 router.get('/user', authMiddleware, getUserQuizzes);
 router.delete('/:id', authMiddleware, deleteQuiz);
