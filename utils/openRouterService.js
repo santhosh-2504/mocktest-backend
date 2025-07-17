@@ -13,7 +13,7 @@ import path from 'path';
 // OpenRouter configuration
 const OPENROUTER_API_URL = 'https://openrouter.ai/api/v1/chat/completions';
 const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY; // Should be set in your environment
-const DEFAULT_MODEL = 'opengvlab/internvl3-14b:free'; // High capability model for generating quality quizzes
+const DEFAULT_MODEL = 'mistralai/mistral-small-3.2-24b-instruct-2506:free'; // High capability model for generating quality quizzes
 
 /**
  * Sanitizes the AI response by removing markdown symbols, escaped characters, and unwanted formatting
